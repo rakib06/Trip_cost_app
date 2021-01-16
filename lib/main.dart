@@ -9,28 +9,33 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Hello You',
+      title: 'Trip Cost Calculator',
       theme: ThemeData(
         primarySwatch: Colors.blue,
         visualDensity: VisualDensity.adaptivePlatformDensity,
       ),
-      home: new HelloYou(),
+      home: new FuelForm(),
     );
   }
 }
 
-class HelloYou extends StatefulWidget {
+class FuelForm extends StatefulWidget {
   @override
-  State<StatefulWidget> createState() => _HelloYouState();
+  State<StatefulWidget> createState() => _FuelFormState();
 }
 
-class _HelloYouState extends State<HelloYou> {
-  String name = '';
+class _FuelFormState extends State<FuelForm> {
+  String result = '';
+  TextEditingController distanceController = TextEditingController();
+  TextEditingController avgController = TextEditingController();
+  TextEditingController priceController = TextEditingController();
   final _currencies = ['Dollars', 'Euro', 'Pounds'];
   String _currency = 'Dollars';
+  final double _formDistance = 5.0;
 
   @override
   Widget build(BuildContext context) {
+    TextStyle textStyle = Theme.of(context).textTheme.subtitle1;
     return Scaffold(
       appBar: AppBar(
         title: Text("Hello"),
@@ -40,14 +45,45 @@ class _HelloYouState extends State<HelloYou> {
         padding: EdgeInsets.all(15.0),
         child: Column(
           children: <Widget>[
-            TextField(
-              decoration: InputDecoration(hintText: 'Please Insert you name'),
-              onChanged: (String string) {
-                setState(() {
-                  name = string;
-                });
-              },
-            ),
+            Padding(
+                padding:
+                    EdgeInsets.only(top: _formDistance, bottom: _formDistance),
+                child: TextField(
+                  controller: distanceController,
+                  decoration: InputDecoration(
+                      labelText: 'Distance',
+                      hintText: 'e.g. 123',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                  keyboardType: TextInputType.number,
+                )),
+            Padding(
+                padding:
+                    EdgeInsets.only(top: _formDistance, bottom: _formDistance),
+                child: TextField(
+                  controller: avgController,
+                  decoration: InputDecoration(
+                      labelText: 'Distance Per Unit',
+                      hintText: 'e.g. 17',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                  keyboardType: TextInputType.number,
+                )),
+            Padding(
+                padding:
+                    EdgeInsets.only(top: _formDistance, bottom: _formDistance),
+                child: TextField(
+                  controller: priceController,
+                  decoration: InputDecoration(
+                      labelText: 'Price',
+                      hintText: 'e.g. 17',
+                      labelStyle: textStyle,
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(5.0))),
+                  keyboardType: TextInputType.number,
+                )),
             DropdownButton<String>(
               items: _currencies.map((String value) {
                 return DropdownMenuItem<String>(
@@ -58,16 +94,41 @@ class _HelloYouState extends State<HelloYou> {
                 _onDropdownChanged(value);
               },
             ),
-            Text('Hello ' + name + '!')
+            RaisedButton(
+              color: Theme.of(context).primaryColorDark,
+              textColor: Theme.of(context).primaryColorLight,
+              onPressed: () {
+                setState(() {
+                  result = _calculate();
+                });
+              },
+              child: Text(
+                'Submit',
+                textScaleFactor: 1.5,
+              ),
+            ),
+            Text('Hello ' + result + '!')
           ],
         ),
       ),
     );
   }
 
-  _onDropdownChanged(String value) {
+  void _onDropdownChanged(String value) {
     setState(() {
       this._currency = value;
     });
+  }
+
+  String _calculate() {
+    double _distance = double.parse(distanceController.text);
+    double _fuelcost = double.parse(priceController.text);
+    double _consumption = double.parse(avgController.text);
+    double _totalCost = _distance / _consumption * _fuelcost;
+    String _result = 'The total cost for your trip is ' +
+        _totalCost.toStringAsFixed(2) +
+        ' ' +
+        _currency;
+    return _result;
   }
 }
