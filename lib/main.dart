@@ -33,7 +33,7 @@ class _HelloYouState extends State<HelloYou> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text("Hello"),
+        title: Text("Hello.."),
         backgroundColor: Colors.blueAccent,
       ),
       body: Container(
